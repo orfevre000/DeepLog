@@ -47,8 +47,8 @@ class Model(nn.Module):
 if __name__ == '__main__':
 
     # Hyperparameters
-    num_classes = 28
-    num_epochs = 300
+    num_classes = 30
+    num_epochs = 30
     batch_size = 2048
     input_size = 1
     model_dir = 'model'
@@ -63,7 +63,8 @@ if __name__ == '__main__':
     window_size = args.window_size
 
     model = Model(input_size, hidden_size, num_layers, num_classes).to(device)
-    seq_dataset = generate('hdfs_train')
+    #seq_dataset = generate('hdfs_train')
+    seq_dataset = generate('error_log_normal_masked_parsed')
     dataloader = DataLoader(seq_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
     writer = SummaryWriter(log_dir='log/' + log)
 
@@ -97,3 +98,19 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), model_dir + '/' + log + '.pt')
     writer.close()
     print('Finished Training')
+
+
+
+
+#import torch
+import torch.jit
+
+# 学習済みのPyTorchモデルを読み込む
+model = Model(input_size, hidden_size, num_layers, num_classes)
+model.load_state_dict(torch.load('model/Adam_batch_size=2048_epoch=30.pt'))
+model.eval()  # モデルを評価モードに設定
+
+# トレース
+example_input = torch.randn(1, window_size, input_size)
+traced_model = torch.jit.trace(model, example_input)
+traced_model.save('traced_model.pt')

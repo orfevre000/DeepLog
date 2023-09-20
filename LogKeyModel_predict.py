@@ -4,7 +4,8 @@ import time
 import argparse
 
 # Device configuration
-device = torch.device("cpu")
+#device = torch.device("cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def generate(name):
@@ -33,7 +34,7 @@ class Model(nn.Module):
     def forward(self, x):
         h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
         c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
-        out, _ = self.lstm(x, (h0, c0))
+        out, _ = self.lstm(x, (h0, c0)) 
         out = self.fc(out[:, -1, :])
         return out
 
@@ -41,9 +42,9 @@ class Model(nn.Module):
 if __name__ == '__main__':
 
     # Hyperparameters
-    num_classes = 28
+    num_classes = 30
     input_size = 1
-    model_path = 'model/Adam_batch_size=2048_epoch=300.pt'
+    model_path = 'model/Adam_batch_size=2048_epoch=30.pt'
     parser = argparse.ArgumentParser()
     parser.add_argument('-num_layers', default=2, type=int)
     parser.add_argument('-hidden_size', default=64, type=int)
@@ -59,8 +60,10 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(model_path))
     model.eval()
     print('model_path: {}'.format(model_path))
-    test_normal_loader = generate('hdfs_test_normal')
-    test_abnormal_loader = generate('hdfs_test_abnormal')
+    #test_normal_loader = generate('hdfs_test_normal')
+    #test_abnormal_loader = generate('hdfs_test_abnormal')
+    test_normal_loader = generate('error_log_normal_masked_parsed')
+    test_abnormal_loader = generate('error_log_exploit_masked_parsed')
     TP = 0
     FP = 0
     # Test the model
