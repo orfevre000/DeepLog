@@ -22,6 +22,7 @@ def generate(name):
             for i in range(len(line) - window_size):
                 inputs.append(line[i:i + window_size])
                 outputs.append(line[i + window_size])
+                
     print('Number of sessions({}): {}'.format(name, num_sessions))
     print('Number of seqs({}): {}'.format(name, len(inputs)))
     dataset = TensorDataset(torch.tensor(inputs, dtype=torch.float), torch.tensor(outputs))
@@ -41,14 +42,15 @@ class Model(nn.Module):
         c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
+        breakpoint()
         return out
 
 
 if __name__ == '__main__':
 
     # Hyperparameters
-    num_classes = 30
-    num_epochs = 30
+    num_classes = 28
+    num_epochs = 300
     batch_size = 2048
     input_size = 1
     model_dir = 'model'
@@ -82,7 +84,7 @@ if __name__ == '__main__':
             seq = seq.clone().detach().view(-1, window_size, input_size).to(device)
             output = model(seq)
             loss = criterion(output, label.to(device))
-
+            
             # Backward and optimize
             optimizer.zero_grad()
             loss.backward()

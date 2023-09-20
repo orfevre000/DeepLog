@@ -12,7 +12,7 @@ def generate(name):
     # If you what to replicate the DeepLog paper results(Actually, I have a better result than DeepLog paper results),
     # you should use the 'list' not 'set' to obtain the full dataset, I use 'set' just for test and acceleration.
     hdfs = set()
-    # hdfs = []
+    # hdfs = [] 
     with open('data/' + name, 'r') as f:
         for ln in f.readlines():
             ln = list(map(lambda n: n - 1, map(int, ln.strip().split())))
@@ -44,7 +44,12 @@ if __name__ == '__main__':
     # Hyperparameters
     num_classes = 30
     input_size = 1
+<<<<<<< HEAD
     model_path = 'model/Adam_batch_size=2048_epoch=30.pt'
+=======
+    #model_path = 'model/Adam_batch_size=2048_epoch=20.pt'
+    model_path = 'fed_model/averaged_model.pt'
+>>>>>>> 65d8ab932b177b84f357a8f184d528887f8157a5
     parser = argparse.ArgumentParser()
     parser.add_argument('-num_layers', default=2, type=int)
     parser.add_argument('-hidden_size', default=64, type=int)
