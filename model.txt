@@ -1,5 +1,0 @@
-model_path: model/Adam_batch_size=2048_epoch=20.pt
-model_path: model/Adam_batch_size=2048_epoch=3.pt
-> /home/makisuna@SSN/LogKey/Federated.py(98)<module>()
--> check_models(model1, model2, model3)
-(Pdb) 
