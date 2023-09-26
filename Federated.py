@@ -17,6 +17,7 @@ def average_models(models):
     # 各モデルの重みを取得
     all_weights = [model.state_dict() for model in models]
 
+
     # 重みの平均値を計算
     averaged_weights = {}
     for param_name in all_weights[0].keys():
@@ -28,6 +29,25 @@ def average_models(models):
     averaged_model.load_state_dict(averaged_weights)
 
     return averaged_model
+
+
+def show_param(model , file_name):
+    model_dict=model.state_dict()
+    param_list=[]
+    '''
+    for param_name in model_dict.keys():
+        t =[param_name , model_dict[param_name]]
+        param_list.append(t)
+    '''
+    f=open(file_name+"_param.txt" , "w")
+    for param_name in model_dict.keys():
+        f.write("################ "+str(param_name)+" ################\n")
+        for element in model_dict[param_name]:
+            f.writelines(str(element)+"\n")
+        f.write("\n")
+    f.close()
+
+    #return param_list
 
 
 class Model(nn.Module):
@@ -85,17 +105,15 @@ if __name__ == '__main__':
     model3 = Model(input_size, hidden_size, num_layers, num_classes).to(device)
     model3.load_state_dict(torch.load('fed_model/averaged_model.pt'))
     
-
-    print(model1.state_dict())
-    print("######################################\n")
-    print(model2.state_dict())
-    print("######################################\n")
-    print(model3.state_dict())
-    
-    
-    for key in model1.state_dict().keys():
-        #breakpoint()
-        desired_element = model1.state_dict()[key]
-        print(str(key) + ":" +  str(len(desired_element)))
-
-
+    #パラメータをファイルに出力
+    model1_param=show_param(model1,"model1")
+    model2_param=show_param(model2,"model2")
+    '''
+    f=open("model_param.txt" ,"w")
+    f.writelines(str(model1_param))
+    f.write("\n")
+    f.write("###########################")
+    f.write("\n")
+    f.writelines(str(model2_param))
+    f.close()
+    '''
