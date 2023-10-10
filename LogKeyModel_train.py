@@ -6,7 +6,6 @@ from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import TensorDataset, DataLoader
 import argparse
 import os
-
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -42,7 +41,6 @@ class Model(nn.Module):
         c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
-        breakpoint()
         return out
 
 
@@ -50,7 +48,7 @@ if __name__ == '__main__':
 
     # Hyperparameters
     num_classes = 28
-    num_epochs = 300
+    num_epochs = 30
     batch_size = 2048
     input_size = 1
     model_dir = 'model'
@@ -102,8 +100,23 @@ if __name__ == '__main__':
     print('Finished Training')
 
 
+import torch.onnx
+
+# モデルを読み込む
+model = Model(input_size, hidden_size, num_layers, num_classes)
+model.load_state_dict(torch.load('model/Adam_batch_size=2048_epoch=30.pt'))
+model.eval()  # モデルを評価モードに設定
+
+# ダミーの入力データを作成
+dummy_input = torch.randn(1, window_size, input_size).to(device)
+
+# モデルをONNX形式に変換して保存
+onnx_path = 'model.onnx'
+torch.onnx.export(model, dummy_input, "model.onnx", verbose=True, input_names=['input'], output_names=['output'], dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}})
 
 
+'''
+#PyTorchからtorch scriptにモデルを変換
 #import torch
 import torch.jit
 
@@ -116,3 +129,4 @@ model.eval()  # モデルを評価モードに設定
 example_input = torch.randn(1, window_size, input_size)
 traced_model = torch.jit.trace(model, example_input)
 traced_model.save('traced_model.pt')
+'''

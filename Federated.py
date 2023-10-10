@@ -34,10 +34,12 @@ def average_models(models):
 def show_param(model , file_name):
     model_dict=model.state_dict()
     param_list=[]
-    '''
+    
     for param_name in model_dict.keys():
         t =[param_name , model_dict[param_name]]
         param_list.append(t)
+    breakpoint()
+    
     '''
     f=open(file_name+"_param.txt" , "w")
     for param_name in model_dict.keys():
@@ -46,6 +48,7 @@ def show_param(model , file_name):
             f.writelines(str(element)+"\n")
         f.write("\n")
     f.close()
+    '''
 
     #return param_list
 
